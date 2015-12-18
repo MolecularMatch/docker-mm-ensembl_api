@@ -1,0 +1,4 @@
+ensemblApi:
+  image: rsmith/docker-mm-ensembl_api
+  ports:
+   - "3000:3000"
