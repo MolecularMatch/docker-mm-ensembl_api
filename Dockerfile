@@ -29,7 +29,12 @@ RUN git ensembl --clone api
 RUN git clone https://github.com/Ensembl/ensembl-tools.git
 RUN git clone https://github.com/Ensembl/ensembl-rest
 
-# components of the REST API require the Tabix library.
+# Add perl module dependencies for ensembl rest api
+RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel
+WORKDIR $HOME/src/ensembl-rest
+RUN cpanm --installdeps .
+
+# components of the REST API require the Tabix, HTSlib, and FAIDX libraries.
 WORKDIR $HOME/src
 RUN git clone https://github.com/samtools/tabix
 WORKDIR $HOME/src/tabix
@@ -38,11 +43,15 @@ WORKDIR $HOME/src/tabix/perl
 RUN perl Makefile.PL PREFIX=$HOME/src/
 RUN make
 RUN make install
-
-# Add perl module dependencies for ensembl rest api
-RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel
-WORKDIR $HOME/src/ensembl-rest
-RUN cpanm --installdeps .
+WORKDIR $HOME/src
+RUN git clone https://github.com/samtools/htslib.git
+WORKDIR $HOME/src/htslib
+RUN make
+WORKDIR $HOME/src
+RUN git clone https://github.com/Ensembl/faidx_xs.git
+WORKDIR $HOME/src/faidx_xs
+RUN perl Makefile.PL
+RUN make
 
 # add ensembl modules to perl library
 ENV PERL5LIB $PERL5LIB:$HOME/src/bioperl-live
@@ -55,6 +64,9 @@ ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-rest/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/lib/perl/5.18.2
 ENV PERL5LIB $PERL5LIB:$HOME/src/tabix/perl
 ENV PERL5LIB $PERL5LIB:$HOME/perl5/lib/perl5
+# add faidx module and loadable to perl library
+ENV PERL5LIB $PERL5LIB:$HOME/src/faidx_xs/lib
+ENV PERL5LIB $PERL5LIB:$HOME/src/faidx_xs/blib/arch/auto/Faidx
 RUN export PERL5LIB
 
 # add ensembl tools to path
