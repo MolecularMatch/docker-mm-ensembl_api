@@ -81,8 +81,11 @@ RUN export PATH
 # add config files
 COPY ensembl_rest.conf $HOME/src/ensembl-rest/
 
+# add run.sh to convert environment variables
+COPY run.sh /usr/bin/
+
 # accept connections over port 3000
 EXPOSE 3000
 
 # start rest server
-ENTRYPOINT ["/opt/src/ensembl-rest/script/ensembl_rest_server.pl"]
+ENTRYPOINT ["/usr/bin/run.sh"]
