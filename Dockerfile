@@ -29,6 +29,9 @@ RUN git ensembl --clone api
 RUN git clone https://github.com/Ensembl/ensembl-tools.git
 RUN git clone https://github.com/Ensembl/ensembl-rest
 
+# specify version of ensembl API
+RUN git ensembl --checkout --branch release/82 api
+
 # Add perl module dependencies for ensembl rest api
 RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel
 WORKDIR $HOME/src/ensembl-rest
