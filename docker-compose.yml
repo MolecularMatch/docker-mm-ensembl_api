@@ -1,9 +1,10 @@
 ensemblApi:
   image: rsmith/docker-mm-ensembl_api
   ports:
-   - "80:3000"
+   - "8000:3000"
   environment:
    - SQL_HOST=
-   - SQL_PORT=
-   - SQL_USER=
-   - SQL_PASSWORD=
+   - SQL_PORT=3306
+   - SQL_USER=anonymous
+  volumes:
+   - /data/ensembl:/opt/.vep
