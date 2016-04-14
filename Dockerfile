@@ -33,7 +33,7 @@ RUN git clone https://github.com/Ensembl/ensembl-rest
 RUN git ensembl --checkout --branch release/84 api
 
 # Add perl module dependencies for ensembl rest api
-RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel Set::Interval Ensembl::XS
+RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel Set::IntervalTree
 WORKDIR $HOME/src/ensembl-rest
 RUN cpanm --installdeps .
 
@@ -56,6 +56,14 @@ WORKDIR $HOME/src/faidx_xs
 RUN perl Makefile.PL
 RUN make
 
+# Ensembl claims increase in speed (5-10%) with Ensembl::XS
+WORKDIR $HOME/src
+RUN git clone https://github.com/Ensembl/ensembl-xs.git
+WORKDIR $HOME/src/ensembl-xs
+RUN perl Makefile.PL PREFIX=$HOME/src/
+RUN make
+RUN make install
+
 # add ensembl modules to perl library
 ENV PERL5LIB $PERL5LIB:$HOME/src/bioperl-live
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl/modules
@@ -64,6 +72,7 @@ ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-funcgen/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-variation/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-io/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-rest/modules
+ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-xs/lib/Bio/EnsEMBL
 ENV PERL5LIB $PERL5LIB:$HOME/src/lib/perl/5.18.2
 ENV PERL5LIB $PERL5LIB:$HOME/src/tabix/perl
 ENV PERL5LIB $PERL5LIB:$HOME/perl5/lib/perl5
