@@ -33,7 +33,7 @@ RUN git clone https://github.com/Ensembl/ensembl-rest
 RUN git ensembl --checkout --branch release/84 api
 
 # Add perl module dependencies for ensembl rest api
-RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel
+RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel Set::Interval Ensembl::XS
 WORKDIR $HOME/src/ensembl-rest
 RUN cpanm --installdeps .
 
