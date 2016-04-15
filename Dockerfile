@@ -37,7 +37,7 @@ RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel Set::Inter
 WORKDIR $HOME/src/ensembl-rest
 RUN cpanm --installdeps .
 
-# components of the REST API require the Tabix, HTSlib, and FAIDX libraries.
+# components of the REST API require the Tabix, HTSlib, and biodbhts libraries
 WORKDIR $HOME/src
 RUN git clone https://github.com/samtools/tabix
 WORKDIR $HOME/src/tabix
@@ -50,11 +50,17 @@ WORKDIR $HOME/src
 RUN git clone https://github.com/samtools/htslib.git
 WORKDIR $HOME/src/htslib
 RUN make
+
+# It would seem that BioDBHTS supercedes the faidx-xs library
 WORKDIR $HOME/src
-RUN git clone https://github.com/Ensembl/faidx_xs.git
-WORKDIR $HOME/src/faidx_xs
-RUN perl Makefile.PL
-RUN make
+# BioDBHTS needs to know the location of htslib
+ENV HTSLIB_DIR $HOME/src/htslib
+RUN export HTSLIB_DIR
+RUN git clone https://github.com/Ensembl/Bio-HTS.git biodbhts
+WORKDIR $HOME/src/biodbhts
+RUN cpanm Module::Build
+RUN perl Build.PL
+RUN ./Build
 
 # Ensembl claims increase in speed (5-10%) with Ensembl::XS
 WORKDIR $HOME/src
@@ -76,9 +82,8 @@ ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-xs/lib/Bio/EnsEMBL
 ENV PERL5LIB $PERL5LIB:$HOME/src/lib/perl/5.18.2
 ENV PERL5LIB $PERL5LIB:$HOME/src/tabix/perl
 ENV PERL5LIB $PERL5LIB:$HOME/perl5/lib/perl5
-# add faidx module and loadable to perl library
-ENV PERL5LIB $PERL5LIB:$HOME/src/faidx_xs/lib
-ENV PERL5LIB $PERL5LIB:$HOME/src/faidx_xs/blib/arch/auto/Faidx
+ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/lib
+ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/blib/arch/auto/Bio/DB/HTS/Faidx
 RUN export PERL5LIB
 
 # add ensembl tools to path
