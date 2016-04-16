@@ -92,7 +92,7 @@ ENV PATH $HOME/src/ensembl-tools/scripts/id_history_converter:$PATH
 ENV PATH $HOME/src/ensembl-tools/scripts/region_reporter:$PATH
 ENV PATH $HOME/src/ensembl-tools/scripts/variant_effect_predictor:$PATH
 # add tabix to path
-ENV PATH $HOME/src/tabix/:$PATH
+ENV PATH $HOME/src/tabix:$PATH
 RUN export PATH
 
 # add config files
