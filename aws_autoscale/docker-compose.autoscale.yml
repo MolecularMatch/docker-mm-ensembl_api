@@ -1,0 +1,43 @@
+ensemblApi1:
+  image: rsmith/docker-mm-ensembl_api
+  ports:
+   - "3001:3000"
+  environment:
+   - SQL_HOST=ensembl.cdg5r2nfuxax.us-east-1.rds.amazonaws.com
+   - SQL_PORT=3306
+   - SQL_USER=anonymous
+  volumes:
+   - /data/ensembl:/opt/.vep
+
+ensemblApi2:
+  image: rsmith/docker-mm-ensembl_api
+  ports:
+   - "3002:3000"
+  environment:
+   - SQL_HOST=ensembl.cdg5r2nfuxax.us-east-1.rds.amazonaws.com
+   - SQL_PORT=3306
+   - SQL_USER=anonymous
+  volumes:
+   - /data/ensembl:/opt/.vep
+
+ensemblApi3:
+  image: rsmith/docker-mm-ensembl_api
+  ports:
+   - "3003:3000"
+  environment:
+   - SQL_HOST=ensembl.cdg5r2nfuxax.us-east-1.rds.amazonaws.com
+   - SQL_PORT=3306
+   - SQL_USER=anonymous
+  volumes:
+   - /data/ensembl:/opt/.vep
+
+ensemblApi4:
+  image: rsmith/docker-mm-ensembl_api
+  ports:
+   - "3004:3000"
+  environment:
+   - SQL_HOST=ensembl.cdg5r2nfuxax.us-east-1.rds.amazonaws.com
+   - SQL_PORT=3306
+   - SQL_USER=anonymous
+  volumes:
+   - /data/ensembl:/opt/.vep
