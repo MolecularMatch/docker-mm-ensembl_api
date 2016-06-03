@@ -8,7 +8,12 @@ FROM ubuntu
 # need libmysqlclient-dev to configure DBD::mysql
 # XML::Parser requires expat and can't find it (libxml-parser-perl)
 # Configure failed for XML-LibXML-2.0122 perl module, use OS package
-RUN apt-get update && apt-get -y install build-essential cpanminus libmysqlclient-dev git libxml-parser-perl libxml2-dev
+RUN apt-get update && apt-get -y install python curl unzip build-essential cpanminus libmysqlclient-dev git libxml-parser-perl libxml2-dev
+
+#install awscli
+RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+RUN unzip awscli-bundle.zip
+RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
 # setup working directory
 ENV HOME /opt
