@@ -11,6 +11,7 @@ aws s3 cp s3://mm-s3-bucket/importdata/ensembl_api_84_cache_fasta.tgz ensembl_ap
 #unzip the files from s3 to the proper location
 if [ -e "ensembl_api_84_cache_fasta.tgz" ]
 then
+	mkdir -p /opt/.vep
 	tar -xvf ensembl_api_84_cache_fasta.tgz -C /opt/.vep
 fi
 
