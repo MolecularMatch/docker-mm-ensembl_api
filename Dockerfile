@@ -8,7 +8,12 @@ FROM ubuntu
 # need libmysqlclient-dev to configure DBD::mysql
 # XML::Parser requires expat and can't find it (libxml-parser-perl)
 # Configure failed for XML-LibXML-2.0122 perl module, use OS package
-RUN apt-get update && apt-get -y install build-essential cpanminus libmysqlclient-dev git libxml-parser-perl libxml2-dev
+RUN apt-get update && apt-get -y install python curl unzip build-essential cpanminus libmysqlclient-dev git libxml-parser-perl libxml2-dev
+
+#install awscli
+RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+RUN unzip awscli-bundle.zip
+RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
 # setup working directory
 ENV HOME /opt
@@ -29,12 +34,15 @@ RUN git ensembl --clone api
 RUN git clone https://github.com/Ensembl/ensembl-tools.git
 RUN git clone https://github.com/Ensembl/ensembl-rest
 
+# specify version of ensembl API
+RUN git ensembl --checkout --branch release/84 api
+
 # Add perl module dependencies for ensembl rest api
-RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel
+RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel Set::IntervalTree
 WORKDIR $HOME/src/ensembl-rest
 RUN cpanm --installdeps .
 
-# components of the REST API require the Tabix, HTSlib, and FAIDX libraries.
+# components of the REST API require the Tabix, HTSlib, and biodbhts libraries
 WORKDIR $HOME/src
 RUN git clone https://github.com/samtools/tabix
 WORKDIR $HOME/src/tabix
@@ -47,11 +55,25 @@ WORKDIR $HOME/src
 RUN git clone https://github.com/samtools/htslib.git
 WORKDIR $HOME/src/htslib
 RUN make
+
+# It would seem that BioDBHTS supercedes the faidx-xs library
 WORKDIR $HOME/src
-RUN git clone https://github.com/Ensembl/faidx_xs.git
-WORKDIR $HOME/src/faidx_xs
-RUN perl Makefile.PL
+# BioDBHTS needs to know the location of htslib
+ENV HTSLIB_DIR $HOME/src/htslib
+RUN export HTSLIB_DIR
+RUN git clone https://github.com/Ensembl/Bio-HTS.git biodbhts
+WORKDIR $HOME/src/biodbhts
+RUN cpanm Module::Build
+RUN perl Build.PL
+RUN ./Build
+
+# Ensembl claims increase in speed (5-10%) with Ensembl::XS
+WORKDIR $HOME/src
+RUN git clone https://github.com/Ensembl/ensembl-xs.git
+WORKDIR $HOME/src/ensembl-xs
+RUN perl Makefile.PL PREFIX=$HOME/src/
 RUN make
+RUN make install
 
 # add ensembl modules to perl library
 ENV PERL5LIB $PERL5LIB:$HOME/src/bioperl-live
@@ -61,12 +83,12 @@ ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-funcgen/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-variation/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-io/modules
 ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-rest/modules
+ENV PERL5LIB $PERL5LIB:$HOME/src/ensembl-xs/lib/Bio/EnsEMBL
 ENV PERL5LIB $PERL5LIB:$HOME/src/lib/perl/5.18.2
 ENV PERL5LIB $PERL5LIB:$HOME/src/tabix/perl
 ENV PERL5LIB $PERL5LIB:$HOME/perl5/lib/perl5
-# add faidx module and loadable to perl library
-ENV PERL5LIB $PERL5LIB:$HOME/src/faidx_xs/lib
-ENV PERL5LIB $PERL5LIB:$HOME/src/faidx_xs/blib/arch/auto/Faidx
+ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/lib
+ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/blib/arch/auto/Bio/DB/HTS/Faidx
 RUN export PERL5LIB
 
 # add ensembl tools to path
@@ -75,7 +97,7 @@ ENV PATH $HOME/src/ensembl-tools/scripts/id_history_converter:$PATH
 ENV PATH $HOME/src/ensembl-tools/scripts/region_reporter:$PATH
 ENV PATH $HOME/src/ensembl-tools/scripts/variant_effect_predictor:$PATH
 # add tabix to path
-ENV PATH $HOME/src/tabix/:$PATH
+ENV PATH $HOME/src/tabix:$PATH
 RUN export PATH
 
 # add config files

@@ -3,8 +3,8 @@ ensemblApi:
   ports:
    - "80:3000"
   environment:
-   - SQL_HOST=
+   - SQL_HOST=52.91.109.71
    - SQL_PORT=3306
    - SQL_USER=anonymous
-  volumes:
-   - /data/ensembl:/opt/.vep
+  # volumes:
+  #  - /data/ensembl:/opt/.vep
