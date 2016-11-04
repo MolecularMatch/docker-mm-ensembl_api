@@ -11,7 +11,7 @@ nginx:
    - ensemblApi4
 
 ensemblApi1:
-  image: cfdavis/docker-mm-ensembl_api:84
+  image: cfdavis/docker-mm-ensembl_api:86
   ports:
    - "3001:3000"
   environment:
@@ -24,7 +24,7 @@ ensemblApi1:
    - /data/ensembl:/opt/.vep
 
 ensemblApi2:
-  image: cfdavis/docker-mm-ensembl_api:84
+  image: cfdavis/docker-mm-ensembl_api:86
   ports:
    - "3002:3000"
   environment:
@@ -37,7 +37,7 @@ ensemblApi2:
    - /data/ensembl:/opt/.vep
 
 ensemblApi3:
-  image: cfdavis/docker-mm-ensembl_api:84
+  image: cfdavis/docker-mm-ensembl_api:86
   ports:
    - "3003:3000"
   environment:
@@ -50,7 +50,7 @@ ensemblApi3:
    - /data/ensembl:/opt/.vep
 
 ensemblApi4:
-  image: cfdavis/docker-mm-ensembl_api:84
+  image: cfdavis/docker-mm-ensembl_api:86
   ports:
    - "3004:3000"
   environment:

@@ -35,10 +35,14 @@ RUN git clone https://github.com/Ensembl/ensembl-tools.git
 RUN git clone https://github.com/Ensembl/ensembl-rest
 
 # specify version of ensembl API
-RUN git ensembl --checkout --branch release/84 api
+RUN git ensembl --checkout --branch release/86 api
 
 # Add perl module dependencies for ensembl rest api
-RUN cpanm DBI DBD::mysql IO::String Catalyst::Runtime Catalyst::Devel Set::IntervalTree
+# File/Find/Rule required for Devel/CheckOS, which is required by Catalyst
+RUN cpanm File::Find::Rule
+RUN cpanm Module::Install::AssertOS
+RUN cpanm DBI DBD::mysql IO::String 
+RUN cpanm Catalyst::Runtime Catalyst::Devel Set::IntervalTree
 WORKDIR $HOME/src/ensembl-rest
 RUN cpanm --installdeps .
 
@@ -89,6 +93,7 @@ ENV PERL5LIB $PERL5LIB:$HOME/src/tabix/perl
 ENV PERL5LIB $PERL5LIB:$HOME/perl5/lib/perl5
 ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/lib
 ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/blib/arch/auto/Bio/DB/HTS/Faidx
+ENV PERL5LIB $PERL5LIB:$HOME/src/biodbhts/blib/arch/auto/Bio/DB/HTS
 RUN export PERL5LIB
 
 # add ensembl tools to path
