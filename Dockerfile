@@ -31,8 +31,8 @@ WORKDIR $HOME/src
 RUN git clone https://github.com/Ensembl/ensembl-git-tools.git
 ENV PATH $HOME/src/ensembl-git-tools/bin:$PATH
 RUN git ensembl --clone api
-RUN git clone https://github.com/Ensembl/ensembl-tools.git
-RUN git clone https://github.com/Ensembl/ensembl-rest
+RUN git clone -b release/86 --depth 1 https://github.com/Ensembl/ensembl-tools.git
+RUN git clone -b release/86 --depth 1 https://github.com/Ensembl/ensembl-rest
 
 # specify version of ensembl API
 RUN git ensembl --checkout --branch release/86 api
