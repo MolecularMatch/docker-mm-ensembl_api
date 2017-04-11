@@ -16,6 +16,7 @@ perl /opt/src/ensembl/misc-scripts/ping_ensembl.pl
 And you may test the API by navigating to http://localhost:3000
 
 ## Upgrading Ensembl
+1. Create new rXX release branch for github
 1. Change Dockerfile to refer to current version (currently 86)
 1. Generate s3://mm-s3-bucket/importdata/ensembl_api_86_cache_fasta.tgz for cache performance improvements
 	1. Get latest cache file from ensembl (rsync -av rsync://ftp.ensembl.org/ensembl/pub/release-88/variation/VEP/homo_sapiens_merged_vep_88_GRCh37.tar.gz .)
