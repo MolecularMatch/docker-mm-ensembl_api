@@ -14,3 +14,18 @@ You may test the connection to ensembl from a prompt
 perl /opt/src/ensembl/misc-scripts/ping_ensembl.pl
 ```
 And you may test the API by navigating to http://localhost:3000
+
+## Upgrading Ensembl
+1. Change Dockerfile to refer to current version (currently 86)
+1. Generate s3://mm-s3-bucket/importdata/ensembl_api_86_cache_fasta.tgz for cache performance improvements
+	1. Get latest cache file from ensembl (rsync -av rsync://ftp.ensembl.org/ensembl/pub/release-88/variation/VEP/homo_sapiens_merged_vep_88_GRCh37.tar.gz .)
+	1. Unzip cache locally (link /opt/.vep to local drive on container)
+	1. Execute cache command (docker exec -t <containerid> /bin/bash) to generate cache files (/opt/src/ensembl-tools/scripts/variant_effect_predictor/convert_cache.pl -species homo_sapiens -version 88_GRCh37 --force)
+	1. Tar gzip the locally linked /opt/.vep folder as ensembl_api_88_cache_fasta.tgz
+	1. Upload new file to s3://mm-s3-bucket/importdata/ensembl_api_88_cache_fasta.tgz
+
+
+## Upgrading MySQL
+1. Run the download script through ./ensembl_db_download.sh homo_sapiens 88 37
+	1. This will download the data as well as load it into the mysql server (connection details are at the bottom of the download script)
+	1. Load the schema for the ensembl_compara_88 manually.  You only need the schema defined, not the data. (If you don't do this you'll get the multi or multi error)
