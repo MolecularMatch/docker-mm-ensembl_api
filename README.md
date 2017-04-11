@@ -30,3 +30,13 @@ And you may test the API by navigating to http://localhost:3000
 1. Run the download script through ./ensembl_db_download.sh homo_sapiens 88 37
 	1. This will download the data as well as load it into the mysql server (connection details are at the bottom of the download script)
 	1. Load the schema for the ensembl_compara_88 manually.  You only need the schema defined, not the data. (If you don't do this you'll get the multi or multi error)
+
+## Upgrading Docker container
+1. Build and tag the new docker container locally
+	1. docker build -t rsmith/docker-mm-ensembl_api:latest -t rsmith/docker-mm-ensembl_api:r88 .
+1. Push docker container to the docker hub repository
+	1. docker push rsmith/docker-mm-ensembl_api
+
+## Configuring ECS
+1. See mm-documentation on how to restart ensembl containers and link to nginx proxy on backup server
+	(Note: containers are run manually on that machine now because ecs was being difficult.  At some point, someone needs to fix that)
